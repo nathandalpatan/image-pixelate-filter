@@ -8,18 +8,29 @@ from PIL import Image
 def main():
     image_path = "dog-guitar.jpg"
     width, height = Image.open(image_path).size
+    k = 21
+    if k > width // 9 or k > height // 9 or k % 2 == 0:
+        print("Error: k is too large for the image dimensions OR k is not odd.")
+        return
+
     pixel_matrix = get_2d_array(image_path)
-    loop_through_pixels(pixel_matrix, width, height)
+    loop_through_pixels(pixel_matrix, width, height, k)
     pixel_array = [pixel for row in pixel_matrix for pixel in row]
     new_img = Image.new("RGB", (width, height))
     new_img.putdata(pixel_array)
     new_img.save("output_image.jpg")
 
 
-def loop_through_pixels(pixel_matrix, width, height):
-    neighbors = [(-1, -1), (-1, 0), (1, 1), (0, -1), (0, 0), (0, 1), (1, -1), (1, 0), (1, 1)]
-    for i in range(1, height - 2, 9):
-        for j in range(1, width - 2, 9):
+def loop_through_pixels(pixel_matrix, width, height, k):
+    neighbors = []
+    half = k // 2
+
+    for m in range(0 - half , half + 1):
+        for n in range(0 - half , half + 1):
+            neighbors.append((m, n))
+
+    for i in range(1, height - 3, k):
+        for j in range(1, width - 3, k):
             r_total, g_total, b_total = 0, 0, 0
             count = 0
             for dx, dy in neighbors:
